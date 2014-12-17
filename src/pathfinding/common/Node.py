@@ -4,33 +4,33 @@ Created on 17 Dec 2014
 @author: jtulip
 '''
 
-from pathfinding.common.Coords import Coords
-
 class Node:
     
     G = 0.5;
     H = 0.5;
     
-    def __init__(self, selfCoords, parentNode, endCoords):
-        self.coords = selfCoords
+    D1 = 1.0
+    D2 = 1.4142
+    
+    def __init__(self, position, parentNode, endPosition):
+        self.position = position
         self.parentNode = parentNode
         if parentNode == None:
             self.cost = 0 
         else: 
-            self.cost = parentNode.get_cost() + parentNode.calc_cost_to_position(self.coords.get_position())
+            self.cost = parentNode.get_cost() + parentNode.calc_cost(self.position)
             
-        self.prox = self.calc_cost(endCoords)
+        self.prox = self.calc_cost(endPosition)
      
     def get_position(self):
-        return self.coords.get_position()   
+        return self.position  
         
-    def calc_cost(self, otherCoords):
-        c = self.coords.diag_dist(otherCoords.get_position())
-        return c
-        
-    def calc_cost_to_position(self, position):
-        c = self.coords.diag_dist(position)
-        return c
+    def calc_cost(self, otherPosition):
+        #cost is calculated as diagonal distance between nodes
+        dx = abs(self.position[0] - otherPosition[0])
+        dy = abs(self.position[1] - otherPosition[1])
+        cost = Node.D1 * (dx + dy) + (Node.D2 - 2*Node.D1) * min(dx,dy)
+        return cost
         
     def get_cost(self):
         return self.cost
@@ -42,31 +42,31 @@ class Node:
         return Node.G * self.cost + Node.H * self.prox
     
     def get_neighbours(self, grid):
-        minX = self.coords.x - 1
-        maxX = self.coords.x + 1
-        minY = self.coords.y - 1
-        maxY = self.coords.y + 1
+        minX = self.position[0] - 1
+        maxX = self.position[0] + 1
+        minY = self.position[1] - 1
+        maxY = self.position[1] + 1
         
         #print(self.get_position(),(minX,maxX,minY,maxY),grid.maxX, grid.maxY)
         
         neighbours = []
         #top row of neighbours
         if minY >= 0:
-            if grid.grid[minY][self.coords.x] != 1:
-                neighbours.append((self.coords.x, minY))
+            if grid.grid[minY][self.position[0]] != 1:
+                neighbours.append((self.position[0], minY))
             if minX >= 0 and grid.grid[minY][minX] != 1:
                 neighbours.append((minX,minY))
             if maxX <= grid.maxX and grid.grid[minY][maxX] != 1:
                 neighbours.append((maxX, minY))
         #middle row
-        if minX >= 0 and grid.grid[self.coords.y][minX] != 1:
-                neighbours.append((minX, self.coords.y))
-        if maxX <= grid.maxX and grid.grid[self.coords.y][maxX] != 1:
-            neighbours.append((maxX, self.coords.y))
+        if minX >= 0 and grid.grid[self.position[1]][minX] != 1:
+                neighbours.append((minX, self.position[1]))
+        if maxX <= grid.maxX and grid.grid[self.position[1]][maxX] != 1:
+            neighbours.append((maxX, self.position[1]))
         #bottom row
         if maxY <= grid.maxY:
-            if grid.grid[maxY][self.coords.x] != 1:
-                neighbours.append((self.coords.x, maxY))
+            if grid.grid[maxY][self.position[0]] != 1:
+                neighbours.append((self.position[0], maxY))
             if minX >= 0 and grid.grid[maxY][minX] != 1:
                 neighbours.append((minX, maxY))
             if maxX <= grid.maxX and grid.grid[maxY][maxX] != 1:

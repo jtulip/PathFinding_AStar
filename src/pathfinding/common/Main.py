@@ -23,16 +23,16 @@ if __name__ == '__main__':
     grid = Grid(g);
     # print(grid)
     
-    startCoords = Coords(9,0)
-    endCoords = Coords(0,0)
+    startPosition = (9,0)
+    endPosition = (0,0)
         
-    path = findPath(grid, startCoords, endCoords)
+    path = findPath(grid, startPosition, endPosition)
     print(path,'\n')
     
-    grid.grid[startCoords.y][startCoords.x] = "S"    
+    grid.grid[startPosition[1]][startPosition[0]] = "S"    
     for p in path:
         grid.grid[p[1]][p[0]] = '*'
         
-    grid.grid[endCoords.y][endCoords.x] = "E"
+    grid.grid[endPosition[1]][endPosition[0]] = "E"
     
     print(grid)
