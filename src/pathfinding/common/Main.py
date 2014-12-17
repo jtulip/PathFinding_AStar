@@ -4,7 +4,6 @@ Created on 17 Dec 2014
 @author: jtulip
 '''
 from pathfinding.common.Grid import Grid
-from pathfinding.common.Coords import Coords
 from pathfinding.common.Node import Node
 from pathfinding.common.PathFinder import findPath
 
