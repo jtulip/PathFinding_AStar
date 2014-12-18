@@ -6,8 +6,8 @@ Created on 17 Dec 2014
 
 class Node:
     
-    G = 0.5;
-    H = 0.5;
+    G = 0.6
+    H = 0.4
     
     D1 = 1.0
     D2 = 1.4142
@@ -47,29 +47,29 @@ class Node:
         minY = self.position[1] - 1
         maxY = self.position[1] + 1
         
-        #print(self.get_position(),(minX,maxX,minY,maxY),grid.maxX, grid.maxY)
+        #print(self.get_position(),(minX,maxX,minY,maxY),len(grid[0]), len(grid))
         
         neighbours = []
         #top row of neighbours
         if minY >= 0:
-            if grid.grid[minY][self.position[0]] != 1:
+            if grid[minY][self.position[0]] != 1:
                 neighbours.append((self.position[0], minY))
-            if minX >= 0 and grid.grid[minY][minX] != 1:
+            if minX >= 0 and grid[minY][minX] != 1:
                 neighbours.append((minX,minY))
-            if maxX <= grid.maxX and grid.grid[minY][maxX] != 1:
+            if maxX < len(grid[0]) and grid[minY][maxX] != 1:
                 neighbours.append((maxX, minY))
         #middle row
-        if minX >= 0 and grid.grid[self.position[1]][minX] != 1:
+        if minX >= 0 and grid[self.position[1]][minX] != 1:
                 neighbours.append((minX, self.position[1]))
-        if maxX <= grid.maxX and grid.grid[self.position[1]][maxX] != 1:
+        if maxX < len(grid[0]) and grid[self.position[1]][maxX] != 1:
             neighbours.append((maxX, self.position[1]))
         #bottom row
-        if maxY <= grid.maxY:
-            if grid.grid[maxY][self.position[0]] != 1:
+        if maxY < len(grid):
+            if grid[maxY][self.position[0]] != 1:
                 neighbours.append((self.position[0], maxY))
-            if minX >= 0 and grid.grid[maxY][minX] != 1:
+            if minX >= 0 and grid[maxY][minX] != 1:
                 neighbours.append((minX, maxY))
-            if maxX <= grid.maxX and grid.grid[maxY][maxX] != 1:
+            if maxX < len(grid[0]) and grid[maxY][maxX] != 1:
                 neighbours.append((maxX, maxY))
         
         #print(neighbours,'\n')
