@@ -5,6 +5,9 @@ Created on 17 Dec 2014
 '''
 from pathfinding.common.Node import Node
 
+def isPassable(grid,pos):
+    return grid[pos[1]][pos[0]] == 0
+
 def findPath(grid, startPosition, endPosition):
     
     #initialise OPEN with startNode
@@ -28,20 +31,22 @@ def findPath(grid, startPosition, endPosition):
         
         #for each neighbour of current
         for neighbour in neighbours:
-            cost = currentNode.get_cost() + currentNode.calc_cost(neighbour)
-            #if neighbour in OPEN and cost lower than in OPEN
-            if neighbour in openList.keys() and cost < openList[neighbour].get_cost():
-                #remove neighbour from OPEN because new path is better
-                openList.pop(neighbour)
-            #if neighbour in CLOSED and cost lower than in CLOSED
-            if neighbour in closedList.keys() and cost < closedList[neighbour].get_cost():
-                #remove neighbour from CLOSED
-                closedList.pop(neighbour)
-            #if neighbour not in OPEN and not in CLOSED
-            if neighbour not in openList.keys() and neighbour not in closedList.keys():
-                #create a new node (calculating cost
-                neighbourNode = Node(neighbour, currentNode, endPosition)
-                openList[neighbour] = neighbourNode
+            #if neighbour not blocked
+            if isPassable(grid,neighbour):
+                cost = currentNode.get_cost() + currentNode.calc_cost(neighbour)
+                #if neighbour in OPEN and cost lower than in OPEN
+                if neighbour in openList.keys() and cost < openList[neighbour].get_cost():
+                    #remove neighbour from OPEN because new path is better
+                    openList.pop(neighbour)
+                #if neighbour in CLOSED and cost lower than in CLOSED
+                if neighbour in closedList.keys() and cost < closedList[neighbour].get_cost():
+                    #remove neighbour from CLOSED
+                    closedList.pop(neighbour)
+                #if neighbour not in OPEN and not in CLOSED
+                if neighbour not in openList.keys() and neighbour not in closedList.keys():
+                    #create a new node (calculating cost
+                    neighbourNode = Node(neighbour, currentNode, endPosition)
+                    openList[neighbour] = neighbourNode
             
         currentNode = min(openList.values(), key=lambda node: node.get_rank())
         
@@ -50,8 +55,8 @@ def findPath(grid, startPosition, endPosition):
         path.insert(0,currentNode.get_position())
         currentNode = currentNode.parentNode
     
-    for pos in closedList.keys():
-        grid[pos[1]][pos[0]] = 'c'
+    #for pos in closedList.keys():
+    #    grid[pos[1]][pos[0]] = 'c'
         
     return path
         

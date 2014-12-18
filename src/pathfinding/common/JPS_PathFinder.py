@@ -47,7 +47,7 @@ def findPath(grid, startPosition, endPosition):
             #if successor not in OPEN and not in CLOSED
             if successor not in openList.keys() and successor not in closedList.keys():
                 #create a new node (calculating cost
-                successorNode = JPS_Node(successor, currentNode, endPosition)
+                successorNode = JPS_Node(successor, currentNode, endPosition, grid)
                 openList[successor] = successorNode
             
         currentNode = min(openList.values(), key=lambda node: node.get_rank())

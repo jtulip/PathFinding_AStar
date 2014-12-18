@@ -1,19 +1,19 @@
 '''
-Created on 17 Dec 2014
+Created on 18 Dec 2014
 
 @author: jtulip
 '''
-from pathfinding.common.PathFinder import findPath
+from pathfinding.common.JPS_PathFinder import findPath
 
 
 def printGrid(grid):
     s = '[['
     for row in range(len(grid)):
         for col in range(len(grid[0])):
-            s = s + ' ' + str(grid[row][col]) + ' '
-        s = s.rstrip(' ')
-        s = s + ' ] \n ['
-    s = s.rstrip(' \n [')
+            s = s + ' ' + str(grid[row][col]) + ','
+        s = s.rstrip(',')
+        s = s + ' ],\n ['
+    s = s.rstrip(',\n [')
     s = s + ']\n'
     
     print(s)
