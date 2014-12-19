@@ -57,8 +57,8 @@ def findPath(grid, startPosition, endPosition):
         path.insert(0,currentNode.get_position())
         currentNode = currentNode.parentNode
     
-    for pos in closedList.keys():
-        grid[pos[1]][pos[0]] = 'c'
+    #for pos in closedList.keys():
+    #    grid[pos[1]][pos[0]] = 'c'
         
     return path
         

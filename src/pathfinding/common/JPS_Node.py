@@ -132,21 +132,27 @@ class JPS_Node(Node):
         return pruned_neighbours
     
     def isPassable(self, pos):
-        return self.grid[pos[1]][pos[0]] == 0
+        if self.inBounds(pos):
+            v = self.grid[pos[1]][pos[0]]
+            if v == 0:
+                return True
+        return False 
 
     def checkForced(self, blocking, forcedir, neighbours):
-        forced = blocking in neighbours.keys() and not self.isPassable(neighbours[blocking]) and \
-                    forcedir in neighbours.keys() and  self.isPassable(neighbours[forcedir])
-        return forced
+        b = blocking in neighbours.keys() and not self.isPassable(neighbours[blocking])
+        f = forcedir in neighbours.keys() and  self.isPassable(neighbours[forcedir])
+        return b and f
     
     def inBounds(self, pos):
-        return 0 <= pos[1] < len(self.grid) and 0 <= pos[0] < len(self.grid[0])
+        inX = 0 <= pos[1] < len(self.grid)
+        inY = 0 <= pos[0] < len(self.grid[0])
+        return inX and inY
     
     def jump(self, lastPos, direction, endPos):
         curPos = (lastPos[0] + JPS_Node.compass[direction][0], \
                   lastPos[1] + JPS_Node.compass[direction][1])
         
-        if not self.inBounds(curPos) or not self.isPassable(curPos) :
+        if not self.isPassable(curPos) :
             return None
         
         if curPos == endPos:
@@ -160,7 +166,21 @@ class JPS_Node(Node):
         
         if direction in ("NE", "SE", "SW", "NW"):
             for cardinal in direction:
-                if self.jump(curPos, cardinal, endPos) != None:
+                nextPos = self.jump(curPos, cardinal, endPos)
+                if nextPos != None:
                     return curPos
                 
         return self.jump(curPos, direction, endPos)
+    
+    def get_successors(self):
+        ''' returns a list of successor tuples (x, y)'''
+        successors = []
+        neighbours = self.get_neighbours(self.position)
+        pruned = self.prune_neighbours(neighbours, self.direction)
+        
+        for direction in pruned.keys():
+            nextPos = self.jump(self.position, direction, self.endPosition)
+            if nextPos != None:
+                successors.append(nextPos)
+                
+        return successors

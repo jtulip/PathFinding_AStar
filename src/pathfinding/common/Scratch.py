@@ -5,29 +5,42 @@ Created on 18 Dec 2014
 '''
 
 from pathfinding.common.JPS_Node import JPS_Node
+from pathfinding.common.JPS_PathFinder import findPath
 
-grid = [[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 1, 1, 2, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]]
+def printGrid(grid):
+    s = '[['
+    for row in range(len(grid)):
+        for col in range(len(grid[0])):
+            s = s + ' ' + str(grid[row][col]) + ' '
+        s = s.rstrip(' ')
+        s = s + ' ] \n ['
+    s = s.rstrip(' \n [')
+    s = s + ']\n'
+    
+    print(s)
+
+grid = [[ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ],
+        [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ],
+        [ 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 ],
+        [ 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 ],
+        [ 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 ],
+        [ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 ],
+        [ 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 ]]
 
 
-n1 = JPS_Node((3,3), None, (8,8), grid)
-n2 = JPS_Node((3,2), n1, (8,8), grid) #N
-n3 = JPS_Node((4,2), n1, (8,8), grid) #NE
-n4 = JPS_Node((4,3), n1, (8,8), grid) #E
-n5 = JPS_Node((4,4), n1, (8,8), grid) #SE
-n6 = JPS_Node((3,4), n1, (8,8), grid) #S
-n7 = JPS_Node((2,4), n1, (8,8), grid) #SW
-n8 = JPS_Node((2,3), n1, (8,8), grid) #W
-n9 = JPS_Node((2,2), n1, (8,8), grid) #NW
-   
-nodes = [n1, n2, n3, n4, n5, n6, n7, n8, n9]
+startPos = (0,8)
+endPos = (9,0)
+path = findPath(grid, startPos, endPos)
+print(path)
 
-j = n1.jump(n1.position,"NW",n1.endPosition)
-print(j)
+grid[startPos[1]][startPos[0]] = 'S'
+
+for j in path:
+    grid[j[1]][j[0]] = 'j'
+    
+grid[endPos[1]][endPos[0]] = 'E'
+
+
+printGrid(grid)
