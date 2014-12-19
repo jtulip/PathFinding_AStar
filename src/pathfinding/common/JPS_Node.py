@@ -24,8 +24,9 @@ class JPS_Node(Node):
             self.direction = self.get_direction(parentNode.get_position(),self.get_position())
         else:
             self.direction = ""
-        
-    def get_direction(self, p1, p2): 
+     
+    @staticmethod   
+    def get_direction(p1, p2): 
         '''get the direction from p1 to p2'''
         if  p1[1] > p2[1] and p1[0] == p2[0]:
             direction = "N"
@@ -48,12 +49,17 @@ class JPS_Node(Node):
             
         return direction
 
-    def get_neighbours(self, pos):
+    @staticmethod
+    def get_neighbours(pos):
         neighbours = {}
         for i in JPS_Node.compass.keys():
             neighbours[i] = (pos[0]+JPS_Node.compass[i][0], pos[1]+JPS_Node.compass[i][1])
                 
         return neighbours
+    
+    @staticmethod
+    def get_neighbour(pos, direction):
+        return (pos[0]+JPS_Node.compass[direction][0], pos[1]+JPS_Node.compass[direction][1])
             
     def prune_neighbours(self, neighbours, direction):        
         #first - deal with starting node (no direction)
