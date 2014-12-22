@@ -5,9 +5,9 @@ Created on 19 Dec 2014
 '''
 import unittest
 from jps.TestDirection import TestDirection
-from jps.TestJPS import TestJPS
+from jps.TestJPSUtil import TestJPSUtil
 
-testList = [TestDirection, TestJPS]
+testList = [TestDirection, TestJPSUtil]
 testLoader = unittest.TestLoader()
 
 caseList = []

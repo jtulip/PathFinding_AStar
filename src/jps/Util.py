@@ -52,7 +52,7 @@ class JPSUtil:
         return forced
        
     @staticmethod
-    def prune(pos, dirn, grid):
+    def prune(pos, dirn, grid, cut):
         #first - deal with starting node (no direction)
         has_forced = False
         if dirn == "O":
@@ -63,11 +63,16 @@ class JPSUtil:
         #get natural neighbours
         for nat in JPSUtil.naturals[dirn]:
             pruned[nat] = Direction.get_neighbour(pos, nat)
+            
         #get forced neighbours
-        pm = JPSUtil.forced_params[dirn]
-        forced = JPSUtil.get_forced(pos, pm[0], pm[1], pm[2], pm[3], grid)
-        for fn in forced:
-            pruned[fn] = forced[fn]
+        if dirn in ("NE", "SE", "SW", "NW" ) and cut == False:
+            forced = {}            
+        else:
+            pm = JPSUtil.forced_params[dirn]
+            forced = JPSUtil.get_forced(pos, pm[0], pm[1], pm[2], pm[3], grid)
+            for fn in forced:
+                pruned[fn] = forced[fn]
+                
         if len(forced) > 0:
             has_forced = True
         
