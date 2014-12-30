@@ -28,7 +28,8 @@ class JPSUtil:
         "SW": ("S", "SW", "W"),
         "NW": ("N", "NW", "W") }  
         
-
+    diagonals = ("NE", "SE", "SW", "NW")
+    
     @staticmethod
     def check_forced(pos, blockdir, forcedir, grid):
         bPos = Direction.get_neighbour(pos, blockdir)
@@ -41,18 +42,29 @@ class JPSUtil:
 
             
     @staticmethod
-    def get_forced(pos, b_left, f_left, b_right, f_right, grid):
+    def get_forced(pos, dirn, grid, cutting = True):
+        pm = JPSUtil.forced_params[dirn]
+        #b_left = pm[0], f_left = pm[1], b_right = pm[2], f_right = pm[3]
+
         forced = {}
-        if JPSUtil.check_forced(pos, b_left, f_left, grid):
-            forced[f_left] = Direction.get_neighbour(pos, f_left)
-            
-        if JPSUtil.check_forced(pos, b_right, f_right, grid):
-            forced[f_right]= Direction.get_neighbour(pos, f_right)
+        if not (dirn in JPSUtil.diagonals and cutting == False):
+            if JPSUtil.check_forced(pos, pm[0], pm[1], grid):
+                forced[pm[1]] = Direction.get_neighbour(pos, pm[1])
+                
+            if JPSUtil.check_forced(pos, pm[2], pm[3], grid):
+                forced[pm[3]]= Direction.get_neighbour(pos, pm[3])
             
         return forced
+    
+    @staticmethod
+    def has_forced(pos, direction, grid, cutting = True):
+        pm = JPSUtil.forced_params[direction]
+        forced = JPSUtil.get_forced(pos, direction, grid, cutting)
+        hasforced = len(forced) > 0
+        return hasforced
        
     @staticmethod
-    def prune(pos, dirn, grid, cut):
+    def prune(pos, dirn, grid, cutting = True):
         #first - deal with starting node (no direction)
         has_forced = False
         if dirn == "O":
@@ -65,18 +77,11 @@ class JPSUtil:
             pruned[nat] = Direction.get_neighbour(pos, nat)
             
         #get forced neighbours
-        if dirn in ("NE", "SE", "SW", "NW" ) and cut == False:
-            forced = {}            
-        else:
-            pm = JPSUtil.forced_params[dirn]
-            forced = JPSUtil.get_forced(pos, pm[0], pm[1], pm[2], pm[3], grid)
-            for fn in forced:
-                pruned[fn] = forced[fn]
-                
-        if len(forced) > 0:
-            has_forced = True
-        
-        return (has_forced, pruned)
+        forced = JPSUtil.get_forced(pos, dirn, grid, cutting)
+        for fn in forced:
+            pruned[fn] = forced[fn]
+                        
+        return pruned
 
         
       

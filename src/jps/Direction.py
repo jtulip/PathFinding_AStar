@@ -46,6 +46,10 @@ class Direction:
     
     @staticmethod
     def get_neighbour(pos, direction):
-        return (pos[0] + Direction.compass[direction][0], pos[1] + Direction.compass[direction][1])
+        dx = Direction.compass[direction][0]
+        dy = Direction.compass[direction][1]
+        x = pos[0] + dx
+        y = pos[1] + dy
+        return (x, y)
     
             

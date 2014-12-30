@@ -3,6 +3,9 @@ Created on 22 Dec 2014
 
 @author: jtulip
 '''
+from jps.Direction import Direction
+from jps.Grid import Grid
+from jps.Util import JPSUtil
 
 class Node:
 
@@ -13,7 +16,7 @@ class Node:
     D2 = 1.4142
     
     
-    def __init__(self, selfPos, parent, endPos, grid):
+    def __init__(self, selfPos, parent, endPos, grid, cutting = True):
         
         self.pos = selfPos
         self.endPos = endPos 
@@ -22,8 +25,10 @@ class Node:
         
         if parent == None:
             self.cost = 0.0
+            self.dirn = Direction.get_direction(self.pos, self.pos)
         else:
             self.cost = parent.get_cost() + parent.calc_cost(selfPos)
+            self.dirn = Direction.get_direction(self.parent.get_pos(), self.pos)
             
         self.prox = self.calc_cost(endPos)
         
@@ -39,6 +44,9 @@ class Node:
     def get_rank(self):
         return Node.G * self.cost + Node.H * self.prox
     
+    def get_direction(self):
+        return self.dirn
+    
     def calc_cost(self, otherPos):
         #cost is calculated as diagonal distance between nodes
         dx = abs(self.pos[0] - otherPos[0])
@@ -46,3 +54,39 @@ class Node:
         cost = Node.D1 * (dx + dy) + (Node.D2 - 2*Node.D1) * min(dx,dy)
         return cost
                
+    def jump(self, lastPos, direction, endPos, cutting):
+        curPos = Direction.get_neighbour(lastPos, direction)
+    
+        if not Grid.is_passable(curPos, self.grid) :
+            return None
+        
+        if curPos == endPos:
+            return curPos
+        
+        has_forced= JPSUtil.has_forced(curPos, direction, self.grid, cutting) 
+        if has_forced:
+            return curPos
+        
+        if direction in JPSUtil.diagonals:
+            for cardinal in direction:
+                nextPos = self.jump(curPos, cardinal, endPos, cutting)
+                if nextPos != None:
+                    return curPos
+                
+        return self.jump(curPos, direction, endPos, cutting)
+
+    def get_successors(self, cutting = True):
+        ''' returns a list of successor jump point position tuples (x, y)
+        cutting is a boolean that indicates whether corner cutting is allowed'''
+        successors = []
+        pruned = JPSUtil.prune(self.pos, self.get_direction, self.grid, cutting)
+        
+        for direction in pruned.keys():
+            nextPos = self.jump(self.position, direction, self.endPos, cutting)
+            if nextPos != None:
+                successors.append(nextPos)
+                
+        return successors
+    
+    
+
