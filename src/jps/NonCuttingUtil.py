@@ -3,7 +3,6 @@ Created on 19 Dec 2014
 
 @author: jtulip
 '''
-from jps.Grid import Grid
 from jps.Direction import Direction
 
 class JPSUtil:
