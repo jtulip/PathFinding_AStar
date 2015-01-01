@@ -94,6 +94,10 @@ if __name__ == "__main__":
     endPos = (9,6)
     print(startPos, endPos)
     
+    finder = Finder(endPos, grid)
+    
+    
+    '''
     jumps = PathFinder.findPath(startPos, endPos, grid)
     print(jumps,'\n')
     
@@ -117,7 +121,7 @@ if __name__ == "__main__":
     grid[endPos[1]][endPos[0]] = "E"
     
     print(Grid.string(grid))
-    
+    '''
 
 
     

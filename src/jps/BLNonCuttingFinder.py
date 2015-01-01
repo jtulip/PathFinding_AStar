@@ -4,6 +4,8 @@ Created on 19 Dec 2014
 @author: jtulip
 '''
 from jps.Direction import Direction
+from jps.BoundaryList import BoundaryList
+
 
 class Finder:
     
@@ -31,6 +33,10 @@ class Finder:
     def __init__(self, endPos, grid):
         self.endPos = endPos
         self.grid = grid
+        self.blist = BoundaryList(grid)
+        
+        print(self.blist.hlist)
+        print(self.blist.vlist)
             
     def in_bounds(self, pos):
         inX = 0 <= pos[0] < len(self.grid[0])
