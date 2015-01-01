@@ -3,13 +3,15 @@ Created on 22 Dec 2014
 
 @author: jtulip
 '''
-from jps.NonCuttingUtil import JPSUtil
+from jps.BLNonCuttingFinder import Finder
 from jps.Node import Node
 
 class PathFinder:
     
     @staticmethod 
     def findPath(startPos, endPos, grid):
+        
+        finder = Finder(endPos, grid)
         
         #create the starting node
         startNode = Node(startPos, None, endPos, grid)
@@ -34,7 +36,7 @@ class PathFinder:
             closedList[curPos] = currentNode
             
             #get current's successors
-            successors = JPSUtil.get_successors(currentNode.get_pos(), currentNode.get_direction(), endPos, grid)
+            successors = finder.get_successors(currentNode.get_pos(), currentNode.get_direction())
             #print(successors)
         
             #for each of current's successors
@@ -91,6 +93,7 @@ if __name__ == "__main__":
     startPos = (0,8)
     endPos = (9,6)
     print(startPos, endPos)
+    
     jumps = PathFinder.findPath(startPos, endPos, grid)
     print(jumps,'\n')
     

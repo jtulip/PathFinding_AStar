@@ -4,8 +4,6 @@ Created on 22 Dec 2014
 @author: jtulip
 '''
 from jps.Direction import Direction
-from jps.Grid import Grid
-from jps.CuttingUtil import JPSUtil
 
 class Node:
 

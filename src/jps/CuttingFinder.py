@@ -3,10 +3,9 @@ Created on 19 Dec 2014
 
 @author: jtulip
 '''
-from jps.Grid import Grid
 from jps.Direction import Direction
 
-class JPSUtil:
+class Finder:
     
     forced_params = {
         "N" : ("W", "NW", "E", "NE"),
@@ -28,55 +27,52 @@ class JPSUtil:
         "SW": ("S", "SW", "W"),
         "NW": ("N", "NW", "W"),
         "O" : ("N", "NE", "E", "SE", "S", "SW", "W", "NW" )}  
+    
+    def __init__(self, endPos, grid):
+        self.endPos = endPos
+        self.grid = grid
             
-    @staticmethod
-    def in_bounds(pos, grid):
-        inX = 0 <= pos[0] < len(grid[0])
-        inY = 0 <= pos[1] < len(grid)
+    def in_bounds(self, pos):
+        inX = 0 <= pos[0] < len(self.grid[0])
+        inY = 0 <= pos[1] < len(self.grid)
         return inX and inY
     
-    @staticmethod
-    def is_passable(pos, grid):
-        in_bounds = JPSUtil.in_bounds(pos, grid) 
+    def is_passable(self, pos):
+        in_bounds = self.in_bounds(pos) 
         is_open = False
         if in_bounds:
-            x = grid[pos[1]][pos[0]]
-            is_open = x == 0
+            is_open = self.grid[pos[1]][pos[0]] == 0
         return in_bounds and is_open
     
-    @staticmethod
-    def check_forced(pos, blockdir, forcedir, grid):
+    def check_forced(self, pos, blockdir, forcedir):
         bPos = Direction.get_neighbour(pos, blockdir)
-        blocked = not JPSUtil.is_passable(bPos, grid)
+        blocked = not self.is_passable(bPos)
         
         fPos = Direction.get_neighbour(pos, forcedir)
-        forced = JPSUtil.is_passable(fPos, grid)
+        forced = self.is_passable(fPos)
         
         return blocked and forced
 
             
-    @staticmethod
-    def get_forced(pos, dirn, grid):
-        pm = JPSUtil.forced_params[dirn]
+    def get_forced(self, pos, dirn):
+        pm = self.forced_params[dirn]
         #b_left = pm[0], f_left = pm[1], b_right = pm[2], f_right = pm[3]
 
         forced = {}
-        if JPSUtil.check_forced(pos, pm[0], pm[1], grid):
+        if self.check_forced(pos, pm[0], pm[1]):
             forced[pm[1]] = Direction.get_neighbour(pos, pm[1])
             
-        if JPSUtil.check_forced(pos, pm[2], pm[3], grid):
+        if self.check_forced(pos, pm[2], pm[3]):
             forced[pm[3]]= Direction.get_neighbour(pos, pm[3])
             
         return forced
     
-    @staticmethod
-    def has_forced(pos, direction, grid):
-        forced = JPSUtil.get_forced(pos, direction, grid)
+    def has_forced(self, pos, direction):
+        forced = self.get_forced(pos, direction)
         hasforced = len(forced) > 0
         return hasforced
        
-    @staticmethod
-    def prune(pos, dirn, grid):
+    def prune(self, pos, dirn):
         #first - deal with starting node (no direction)
         if dirn == "O":
             return Direction.get_neighbours(pos)
@@ -84,47 +80,45 @@ class JPSUtil:
         #otherwise generate the pruned neighbours
         pruned = {}
         #get natural neighbours
-        for nat in JPSUtil.naturals[dirn]:
+        for nat in self.naturals[dirn]:
             pruned[nat] = Direction.get_neighbour(pos, nat)
             
         #get forced neighbours
-        forced = JPSUtil.get_forced(pos, dirn, grid)
+        forced = self.get_forced(pos, dirn)
         for fn in forced:
             pruned[fn] = forced[fn]
                         
         return pruned
 
-    @staticmethod
-    def jump(lastPos, direction, endPos, grid):
+    def jump(self, lastPos, direction):
         curPos = Direction.get_neighbour(lastPos, direction)
     
-        if not JPSUtil.is_passable(curPos, grid) :
+        if not self.is_passable(curPos) :
             return None
         
-        if curPos == endPos:
+        if curPos == self.endPos:
             return curPos
         
-        has_forced= JPSUtil.has_forced(curPos, direction, grid) 
+        has_forced= self.has_forced(curPos, direction) 
         if has_forced:
             return curPos
         
         if direction in Direction.diagonals:
             for cardinal in direction:
-                nextPos = JPSUtil.jump(curPos, cardinal, endPos, grid)
+                nextPos = self.jump(curPos, cardinal)
                 if nextPos != None:
                     return curPos
                 
-        return JPSUtil.jump(curPos, direction, endPos, grid)
+        return self.jump(curPos, direction)
 
-    @staticmethod
-    def get_successors(pos, dirn, endPos, grid):
+    def get_successors(self, pos, dirn):
         ''' returns a list of successor jump point position tuples (x, y)
         cutting is a boolean that indicates whether corner cutting is allowed'''
         successors = []
-        pruned = JPSUtil.prune(pos, dirn, grid)
+        pruned = self.prune(pos, dirn)
         
         for direction in pruned.keys():
-            nextPos = JPSUtil.jump(pos, direction, endPos, grid)
+            nextPos = self.jump(pos, direction)
             if nextPos != None:
                 successors.append(nextPos)
                 
