@@ -20,4 +20,19 @@ class Grid:
             x = grid[pos[1]][pos[0]]
             is_open = x == 0
         return in_bounds and is_open
+    
+    @staticmethod
+    def string(grid):
+        s = '[['
+        for row in range(len(grid)):
+            for col in range(len(grid[0])):
+                s = s + ' ' + str(grid[row][col]) + ' '
+            s = s.rstrip(' ')
+            s = s + ' ] \n ['
+        s = s.rstrip(' \n [')
+        s = s + ']\n'
+    
+        return s 
+
+
         

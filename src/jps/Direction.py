@@ -29,6 +29,8 @@ class Direction:
     
     directions = ("N", "NE", "E", "SE", "S", "SW", "W", "NW")
     
+    diagonals = ("NE", "SE", "SW", "NW")
+    
     @staticmethod
     def get_direction(fromPos, toPos):
         x = -1 if toPos[0] - fromPos[0] < 0 else 0 if toPos[0] - fromPos[0] == 0 else 1

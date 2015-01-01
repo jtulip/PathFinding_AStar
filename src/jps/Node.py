@@ -5,7 +5,7 @@ Created on 22 Dec 2014
 '''
 from jps.Direction import Direction
 from jps.Grid import Grid
-from jps.Util import JPSUtil
+from jps.CuttingUtil import JPSUtil
 
 class Node:
 
@@ -54,39 +54,6 @@ class Node:
         cost = Node.D1 * (dx + dy) + (Node.D2 - 2*Node.D1) * min(dx,dy)
         return cost
                
-    def jump(self, lastPos, direction, endPos, cutting):
-        curPos = Direction.get_neighbour(lastPos, direction)
-    
-        if not Grid.is_passable(curPos, self.grid) :
-            return None
-        
-        if curPos == endPos:
-            return curPos
-        
-        has_forced= JPSUtil.has_forced(curPos, direction, self.grid, cutting) 
-        if has_forced:
-            return curPos
-        
-        if direction in JPSUtil.diagonals:
-            for cardinal in direction:
-                nextPos = self.jump(curPos, cardinal, endPos, cutting)
-                if nextPos != None:
-                    return curPos
-                
-        return self.jump(curPos, direction, endPos, cutting)
-
-    def get_successors(self, cutting = True):
-        ''' returns a list of successor jump point position tuples (x, y)
-        cutting is a boolean that indicates whether corner cutting is allowed'''
-        successors = []
-        pruned = JPSUtil.prune(self.pos, self.get_direction, self.grid, cutting)
-        
-        for direction in pruned.keys():
-            nextPos = self.jump(self.position, direction, self.endPos, cutting)
-            if nextPos != None:
-                successors.append(nextPos)
-                
-        return successors
     
     
 
