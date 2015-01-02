@@ -34,21 +34,75 @@ class BoundaryList:
                 clist.append(len(grid))
             self.vlist.append(clist)
     
-    def getNextHorzCloseBoundary(self, pos):
+    def get_next_closed_boundary_pos(self, pos, direction):
         closed = False
-        for b in self.hlist[pos[1]]:
-            if b > pos[0] and not closed:
-                break
-            closed = not closed
-        return b
+        x, y = pos
+        
+        if direction == "E":
+            for bx in self.hlist[y]:
+                if bx > x and not closed:
+                    break
+                closed = not closed
+            return (bx, y)
+        
+        elif direction == "W":
+            for bx in reversed(self.hlist[y]):
+                if bx < x and not closed:
+                    break
+                closed = not closed
+            return (bx, y)
+        
+        elif direction == "S":
+            for by in self.vlist[x]:
+                if by > y and not closed:
+                    break
+                closed = not closed
+            return (x, by)
+        
+        elif direction == "N":
+            for by in reversed(self.vlist[y]):
+                if by < y and not closed:
+                    break
+                closed = not closed
+            return (x, by)
+            
+        else:
+            raise RuntimeError("This method is only for cardinal directions")
 
-    def getNextHorzOpenBoundary(self, pos):
+    def get_next_open_boundary_pos(self, pos, direction):
         closed = False
-        for b in self.hlist[pos[1]]:
-            if b > pos[0] and closed:
-                break
-            closed = not closed
-        return b
+        x, y = pos
+        
+        if direction == "E":
+            for bx in self.hlist[y]:
+                if bx > x and closed:
+                    break
+                closed = not closed
+            return (bx, y)
+        
+        elif direction == "W":
+            for bx in reversed(self.hlist[y]):
+                if bx < x and closed:
+                    break
+                closed = not closed
+            return (bx, y)
+        
+        elif direction == "S":
+            for by in self.vlist[x]:
+                if by > y and closed:
+                    break
+                closed = not closed
+            return (x, by)
+        
+        elif direction == "N":
+            for by in reversed(self.vlist[y]):
+                if by < y and closed:
+                    break
+                closed = not closed
+            return (x, by)
+            
+        else:
+            raise RuntimeError("This method is only for cardinal directions")
 
 if __name__ == "__main__":
         

@@ -54,4 +54,12 @@ class Direction:
         y = pos[1] + dy
         return (x, y)
     
+    @staticmethod
+    def get_position(pos, direction, distance):
+        dx = Direction.compass[direction][0]
+        dy = Direction.compass[direction][1]
+        x = pos[0] + dx*distance
+        y = pos[1] + dy*distance
+        return (x, y)
+    
             

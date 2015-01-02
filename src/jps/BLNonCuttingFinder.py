@@ -5,6 +5,7 @@ Created on 19 Dec 2014
 '''
 from jps.Direction import Direction
 from jps.BoundaryList import BoundaryList
+from math import sqrt
 
 
 class Finder:
@@ -29,6 +30,10 @@ class Finder:
         "SW": ("S", "SW", "W"),
         "NW": ("N", "NW", "W"),
         "O" : ("N", "NE", "E", "SE", "S", "SW", "W", "NW" )}  
+    
+    leftDict = { "N":"W", "E":"N", "S":"E", "W":"S" }
+    
+    rightDict = { "N":"E", "E":"S", "S":"W", "W":"N" }
             
     def __init__(self, endPos, grid):
         self.endPos = endPos
@@ -115,6 +120,34 @@ class Finder:
             pruned[fn] = forced[fn]
                         
         return pruned
+    
+    def distance(self, fromPos, toPos, direction):
+        if direction in ("E", "W"):
+            return abs(fromPos[0]-toPos[0])
+        elif direction in ("N", "S"):
+            return abs(fromPos[1]-toPos[1])
+        else:
+            return abs(sqrt((fromPos[0]-toPos[0])*(fromPos[0]-toPos[0])+(fromPos[1]-toPos[1])*(fromPos[1]-toPos[1])))
+        
+    def getNextJump(self, center, direction):
+        left_neighbour = Direction.get_neighbour(center, self.leftDict[direction])
+        right_neighbour = Direction.get_neighbour(center, self.rightDict[direction])
+        
+        center_boundary_pos = self.blist.get_next_closed_boundary_pos(center, direction)
+        left_open_pos = self.blist.get_next_open_boundary_pos(left_neighbour, direction)
+        right_open_pos = self.blist.get_next_open_boundary_pos(right_neighbour, direction)
+        
+        if self.distance(center, center_boundary_pos, direction) > self.distance(left_neighbour, left_open_pos, direction):
+            return Direction.get_position(center, direction, self.distance(left_neighbour, left_open_pos, direction))
+        
+        if self.distance(center_boundary_pos, direction) > self.distance(right_neighbour, right_open_pos, direction):
+            return Direction.get_position(center, direction, self.distance(right_neighbour, right_open_pos, direction))
+        
+        return None
+        
+        
+        
+    
 
     def jump(self, lastPos, direction):
         curPos = Direction.get_neighbour(lastPos, direction)
