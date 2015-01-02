@@ -139,52 +139,69 @@ class Finder:
 
         
     def getNextJump(self, center, direction):
-        
+        print("        getNextJump : Center", center, direction)
         center_boundary_pos = self.blist.get_next_closed_boundary_pos(center, direction)
+        if Direction.get_direction(center,self.endPos) == direction:
+            if self.distance(center, center_boundary_pos, direction) > self.distance(center, self.endPos, direction):
+                return self.endPos
         
         left_neighbour = Direction.get_neighbour(center, self.leftDict[direction])
-        left_open_pos = self.blist.get_next_open_boundary_pos(left_neighbour, direction)        
+        left_open_pos = self.blist.get_next_open_boundary_pos(left_neighbour, direction)  
+        #print("Left", left_neighbour, left_open_pos)      
         if left_open_pos != None:
             if self.distance(center, center_boundary_pos, direction) > self.distance(left_neighbour, left_open_pos, direction):
                 return Direction.get_position(center, direction, self.distance(left_neighbour, left_open_pos, direction))
         
         right_neighbour = Direction.get_neighbour(center, self.rightDict[direction])
         right_open_pos = self.blist.get_next_open_boundary_pos(right_neighbour, direction)
+        #print("Right", right_neighbour, right_open_pos)      
         if right_open_pos != None:
             if self.distance(center, center_boundary_pos, direction) > self.distance(right_neighbour, right_open_pos, direction):
                 return Direction.get_position(center, direction, self.distance(right_neighbour, right_open_pos, direction))
         
+        print("    returning none - no jump")
         return None
         
         
     def jump(self, lastPos, direction):
+        print("Jump", lastPos, direction)
         curPos = Direction.get_neighbour(lastPos, direction)
     
         if not self.is_passable(curPos) :
+            print("    returning none")
             return None
         
         if curPos == self.endPos:
+            print("    returning endPos")
             return curPos
         
         has_forced= self.has_forced(curPos, direction) 
         if has_forced:
+            print("    returning ", curPos, " has forced")
             return curPos
         
         if direction in Direction.diagonals:
-            for cardinal in direction:
-                nextPos = self.jump(curPos, cardinal)
-                #nextPosBL = self.getNextJump(curPos, cardinal)
-                #print(nextPos, nextPosBL)
-                
+            first, second = direction
+            for cardinal in (first, second):
+                print("    Cardinal", cardinal)
+                nextPosJ = self.jump(curPos, cardinal)
+                nextPos = self.getNextJump(curPos, cardinal)
+                print(        nextPosJ, nextPos)                
                 if nextPos != None:
+                    print("    returning ", curPos, " found jump")
                     return curPos
-                
-        nextPos = self.jump(curPos, direction)
-        #nextPosBL = self.getNextJump(curPos, direction)
-        #print(nextPos, nextPosBL)
+            print("    returning None - no jump")
+            return None
+        else: 
+            nextPosJ = self.jump(curPos, direction)
+            nextPos = self.getNextJump(curPos, direction)
+            print(        nextPosJ, nextPos)                
+            if nextPos != None:
+                print("    returning ", curPos, " found jump")
+                return curPos
+            return None
+            print("    returning None - no jump")
         
-        return self.jump(curPos, direction)
-
 
     def get_successors(self, pos, dirn):
         ''' returns a list of successor jump point position tuples (x, y)'''

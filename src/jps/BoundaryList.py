@@ -42,12 +42,13 @@ class BoundaryList:
         
     def get_next_closed_boundary_pos(self, pos, direction):
         x, y = pos
+        print("            get_closed", pos, direction)
         #deal with out of bounds x indices
         if x < 0 or x > self.maxX:
             return None
         
         #deal with out of bounds y indices
-        if y < 0 or y >= self.maxY:
+        if y < 0 or y > self.maxY:
             return None
         
         hl = self.hlist[y]
