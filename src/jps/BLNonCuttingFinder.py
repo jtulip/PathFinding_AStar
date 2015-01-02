@@ -34,19 +34,22 @@ class Finder:
     leftDict = { "N":"W", "E":"N", "S":"E", "W":"S" }
     
     rightDict = { "N":"E", "E":"S", "S":"W", "W":"N" }
+
             
     def __init__(self, endPos, grid):
         self.endPos = endPos
         self.grid = grid
         self.blist = BoundaryList(grid)
         
-        print(self.blist.hlist)
-        print(self.blist.vlist)
+        #print(self.blist.hlist)
+        #print(self.blist.vlist)
+
             
     def in_bounds(self, pos):
         inX = 0 <= pos[0] < len(self.grid[0])
         inY = 0 <= pos[1] < len(self.grid)
         return inX and inY
+
     
     def is_passable(self, pos):
         in_bounds = self.in_bounds(pos) 
@@ -54,6 +57,7 @@ class Finder:
         if in_bounds:
             is_open = self.grid[pos[1]][pos[0]] == 0
         return in_bounds and is_open
+
     
     def is_reachable(self, pos, dirn):
         npos = Direction.get_neighbour(pos, dirn)
@@ -68,6 +72,7 @@ class Finder:
                 is_open = is_open and (self.is_passable(p1) and self.is_passable(p2) )
                 
         return in_bounds and is_open
+
     
     def check_forced(self, pos, blockdir, forcedir):
         blocked = not self.is_reachable(pos, blockdir)
@@ -97,11 +102,13 @@ class Finder:
                 forced[pm[5]]= Direction.get_neighbour(pos, pm[5])
                 
         return forced
+
     
     def has_forced(self, pos, direction):
         forced = self.get_forced(pos, direction)
         hasforced = len(forced) > 0
         return hasforced
+
        
     def prune(self, pos, dirn):
         #first - deal with starting node (no direction)
@@ -120,35 +127,36 @@ class Finder:
             pruned[fn] = forced[fn]
                         
         return pruned
+
     
     def distance(self, fromPos, toPos, direction):
         if direction in ("E", "W"):
-            return abs(fromPos[0]-toPos[0])
+            return abs(fromPos[0] - toPos[0])
         elif direction in ("N", "S"):
-            return abs(fromPos[1]-toPos[1])
+            return abs(fromPos[1] - toPos[1])
         else:
             return abs(sqrt((fromPos[0]-toPos[0])*(fromPos[0]-toPos[0])+(fromPos[1]-toPos[1])*(fromPos[1]-toPos[1])))
+
         
     def getNextJump(self, center, direction):
-        left_neighbour = Direction.get_neighbour(center, self.leftDict[direction])
-        right_neighbour = Direction.get_neighbour(center, self.rightDict[direction])
         
         center_boundary_pos = self.blist.get_next_closed_boundary_pos(center, direction)
-        left_open_pos = self.blist.get_next_open_boundary_pos(left_neighbour, direction)
+        
+        left_neighbour = Direction.get_neighbour(center, self.leftDict[direction])
+        left_open_pos = self.blist.get_next_open_boundary_pos(left_neighbour, direction)        
+        if left_open_pos != None:
+            if self.distance(center, center_boundary_pos, direction) > self.distance(left_neighbour, left_open_pos, direction):
+                return Direction.get_position(center, direction, self.distance(left_neighbour, left_open_pos, direction))
+        
+        right_neighbour = Direction.get_neighbour(center, self.rightDict[direction])
         right_open_pos = self.blist.get_next_open_boundary_pos(right_neighbour, direction)
-        
-        if self.distance(center, center_boundary_pos, direction) > self.distance(left_neighbour, left_open_pos, direction):
-            return Direction.get_position(center, direction, self.distance(left_neighbour, left_open_pos, direction))
-        
-        if self.distance(center_boundary_pos, direction) > self.distance(right_neighbour, right_open_pos, direction):
-            return Direction.get_position(center, direction, self.distance(right_neighbour, right_open_pos, direction))
+        if right_open_pos != None:
+            if self.distance(center, center_boundary_pos, direction) > self.distance(right_neighbour, right_open_pos, direction):
+                return Direction.get_position(center, direction, self.distance(right_neighbour, right_open_pos, direction))
         
         return None
         
         
-        
-    
-
     def jump(self, lastPos, direction):
         curPos = Direction.get_neighbour(lastPos, direction)
     
@@ -165,14 +173,21 @@ class Finder:
         if direction in Direction.diagonals:
             for cardinal in direction:
                 nextPos = self.jump(curPos, cardinal)
+                nextPosBL = self.getNextJump(curPos, cardinal)
+                print(nextPos, nextPosBL)
+                
                 if nextPos != None:
                     return curPos
                 
+        nextPos = self.jump(curPos, direction)
+        nextPosBL = self.getNextJump(curPos, direction)
+        print(nextPos, nextPosBL)
+        
         return self.jump(curPos, direction)
 
+
     def get_successors(self, pos, dirn):
-        ''' returns a list of successor jump point position tuples (x, y)
-        cutting is a boolean that indicates whether corner cutting is allowed'''
+        ''' returns a list of successor jump point position tuples (x, y)'''
         successors = []
         pruned = self.prune(pos, dirn)
         

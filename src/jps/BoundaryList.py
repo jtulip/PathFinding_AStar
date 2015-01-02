@@ -9,11 +9,13 @@ class BoundaryList:
     def __init__(self, grid):
         self.hlist = []
         self.vlist = []
+        self.maxX = len(grid[0])-1
+        self.maxY = len(grid)-1
         
         # calculate the horizontal boundary lists
         for row in range(len(grid)):
             sense = 0                        #0 represents open on grid
-            rlist = []
+            rlist = [0]
             for col in range(len(grid[0])):
                 if grid[row][col] != sense:
                     rlist.append(col)
@@ -25,7 +27,7 @@ class BoundaryList:
         # calculate the vertical boundary lists
         for col in range(len(grid[0])):
             sense = 0                        #0 represents open on grid
-            clist = []
+            clist = [0]
             for row in range(len(grid)):
                 if grid[row][col] != sense:
                     clist.append(row)
@@ -34,80 +36,106 @@ class BoundaryList:
                 clist.append(len(grid))
             self.vlist.append(clist)
     
-    def get_next_closed_boundary_pos(self, pos, direction):
-        closed = False
-        x, y = pos
+        print(self.hlist)
+        print(self.vlist)
         
+        
+    def get_next_closed_boundary_pos(self, pos, direction):
+        x, y = pos
+        #deal with out of bounds x indices
+        if x < 0 or x > self.maxX:
+            return None
+        
+        #deal with out of bounds y indices
+        if y < 0 or y >= self.maxY:
+            return None
+        
+        hl = self.hlist[y]
+        vl = self.vlist[x]
+
+        closed = True
         if direction == "E":
-            for bx in self.hlist[y]:
+            for bx in hl:
                 if bx > x and not closed:
                     break
                 closed = not closed
             return (bx, y)
         
         elif direction == "W":
-            for bx in reversed(self.hlist[y]):
-                if bx < x and not closed:
+            for bx in reversed(hl):
+                if bx <= x and not closed:
                     break
                 closed = not closed
-            return (bx, y)
+            return (bx-1, y)
         
         elif direction == "S":
-            for by in self.vlist[x]:
+            for by in vl:
                 if by > y and not closed:
                     break
                 closed = not closed
             return (x, by)
         
         elif direction == "N":
-            for by in reversed(self.vlist[y]):
-                if by < y and not closed:
+            for by in reversed(vl):
+                if by <= y and not closed:
                     break
                 closed = not closed
-            return (x, by)
+            return (x, by-1)
             
         else:
             raise RuntimeError("This method is only for cardinal directions")
 
+
     def get_next_open_boundary_pos(self, pos, direction):
-        closed = False
         x, y = pos
+        #deal with out of bounds x indices
+        if x < 0 or x > self.maxX:
+            return None
         
+        #deal with out of bounds y indices
+        if y < 0 or y >= self.maxY:
+            return None
+                
+        hl = self.hlist[y]
+        vl = self.vlist[x]
+        
+        closed = True
         if direction == "E":
-            for bx in self.hlist[y]:
+            for bx in hl:
                 if bx > x and closed:
                     break
                 closed = not closed
             return (bx, y)
         
         elif direction == "W":
-            for bx in reversed(self.hlist[y]):
-                if bx < x and closed:
+            for bx in reversed(hl):
+                if bx <= x and closed:
                     break
                 closed = not closed
-            return (bx, y)
+            return (bx-1, y)
         
         elif direction == "S":
-            for by in self.vlist[x]:
+            for by in vl:
                 if by > y and closed:
                     break
                 closed = not closed
             return (x, by)
         
         elif direction == "N":
-            for by in reversed(self.vlist[y]):
-                if by < y and closed:
+            for by in reversed(vl):
+                if by <= y and closed:
                     break
                 closed = not closed
-            return (x, by)
+            return (x, by-1)
             
         else:
             raise RuntimeError("This method is only for cardinal directions")
 
+
 if __name__ == "__main__":
         
     grid = [[ 0, 0, 0, 0, 0, 0, 1, 1, 0, 0 ],
-            [ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 ],
+            [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
             [ 0, 0, 0, 0, 0, 1, 0, 1, 0, 0 ],
             [ 0, 1, 1, 1, 1, 0, 0, 0, 0, 0 ],
             [ 0, 0, 0, 0, 0, 1, 0, 1, 0, 0 ],
@@ -125,15 +153,30 @@ if __name__ == "__main__":
     print("Hlist : ", blist.hlist,"/n")
     print("Vlist : ", blist.vlist)
     
-    print(0, blist.getNextHorzOpenBoundary((0,0)))
-    print(1, blist.getNextHorzOpenBoundary((0,1)))
-    print(2, blist.getNextHorzOpenBoundary((0,2)))
-    print(3, blist.getNextHorzOpenBoundary((0,3)))
-    print(4, blist.getNextHorzOpenBoundary((0,4)))
-    print(5, blist.getNextHorzOpenBoundary((0,5)))
-    print(6, blist.getNextHorzOpenBoundary((0,6)))
-    print(7, blist.getNextHorzOpenBoundary((0,7)))
-    print(8, blist.getNextHorzOpenBoundary((0,8)))
+    '''
+    for y in range(len(grid)):
+        print(y, blist.get_next_closed_boundary_pos((0, y),"E"))
+
+    for y in range(len(grid)):
+        print(y, blist.get_next_closed_boundary_pos((9, y),"W"))
+
+    for x in range(len(grid[0])):
+        print(x, blist.get_next_closed_boundary_pos((x, 0),"S"))
+
+    for x in range(len(grid[0])):
+        print(x, blist.get_next_closed_boundary_pos((x, 8),"N"))
+    
+    for y in range(len(grid)):
+        print(y, blist.get_next_open_boundary_pos((0, y),"E"))
+
+    for y in range(len(grid)):
+        print(y, blist.get_next_open_boundary_pos((9, y),"W"))
+
+    for x in range(len(grid[0])):
+        print(x, blist.get_next_open_boundary_pos((x, 0),"S"))
+    '''
+    for x in range(len(grid[0])):
+        print(x, blist.get_next_open_boundary_pos((x, 8),"N"))
     
     
             

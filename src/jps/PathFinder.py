@@ -61,11 +61,11 @@ class PathFinder:
                     successorNode = Node(succ, currentNode, endPos, grid)
                     openList[succ] = successorNode
                 
-            print(openList.keys())
+            #print(openList.keys())
             
             currentNode = min(openList.values(), key=lambda node: node.get_rank())
             curPos = currentNode.get_pos()
-            print(curPos)
+            #print(curPos)
         
         #reconstruct path tracing backwards from endNode
         path = []
@@ -93,11 +93,7 @@ if __name__ == "__main__":
     startPos = (0,8)
     endPos = (9,6)
     print(startPos, endPos)
-    
-    finder = Finder(endPos, grid)
-    
-    
-    '''
+        
     jumps = PathFinder.findPath(startPos, endPos, grid)
     print(jumps,'\n')
     
@@ -121,7 +117,6 @@ if __name__ == "__main__":
     grid[endPos[1]][endPos[0]] = "E"
     
     print(Grid.string(grid))
-    '''
 
 
     
