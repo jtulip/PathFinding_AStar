@@ -173,15 +173,15 @@ class Finder:
         if direction in Direction.diagonals:
             for cardinal in direction:
                 nextPos = self.jump(curPos, cardinal)
-                nextPosBL = self.getNextJump(curPos, cardinal)
-                print(nextPos, nextPosBL)
+                #nextPosBL = self.getNextJump(curPos, cardinal)
+                #print(nextPos, nextPosBL)
                 
                 if nextPos != None:
                     return curPos
                 
         nextPos = self.jump(curPos, direction)
-        nextPosBL = self.getNextJump(curPos, direction)
-        print(nextPos, nextPosBL)
+        #nextPosBL = self.getNextJump(curPos, direction)
+        #print(nextPos, nextPosBL)
         
         return self.jump(curPos, direction)
 
