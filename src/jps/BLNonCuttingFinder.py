@@ -182,23 +182,29 @@ class Finder:
         
         if direction in Direction.diagonals:
             first, second = direction
-            for cardinal in (first, second):
-                print("    Cardinal", cardinal)
-                nextPosJ = self.jump(curPos, cardinal)
-                nextPos = self.getNextJump(curPos, cardinal)
-                print(        nextPosJ, nextPos)                
-                if nextPos != None:
-                    print("    returning ", curPos, " found jump")
-                    return curPos
+            while (True):
+                for cardinal in (first, second):
+                    print("    Cardinal", cardinal)
+                    #nextPos = self.jump(curPos, cardinal)
+                    nextPos = self.getNextJump(curPos, cardinal)
+                    #print(        nextPosJ, nextPos)                
+                    if nextPos != None:
+                        print("    returning ", curPos, " found jump")
+                        return curPos
+                if self.is_reachable(curPos, direction):
+                    curPos = Direction.get_neighbour(curPos, direction)
+                else:
+                    break 
+
             print("    returning None - no jump")
             return None
         else: 
-            nextPosJ = self.jump(curPos, direction)
+            #nextPos = self.jump(curPos, direction)
             nextPos = self.getNextJump(curPos, direction)
-            print(        nextPosJ, nextPos)                
+            #print(        nextPosJ, nextPos)                
             if nextPos != None:
                 print("    returning ", curPos, " found jump")
-                return curPos
+                return nextPos
             return None
             print("    returning None - no jump")
         
