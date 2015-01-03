@@ -42,7 +42,9 @@ class BoundaryList:
         
     def get_next_closed_boundary_pos(self, pos, direction):
         x, y = pos
-        print("            get_closed", pos, direction)
+        rx = x
+        ry = y
+        print("            get_closed", pos, direction, end = " ")
         #deal with out of bounds x indices
         if x < 0 or x > self.maxX:
             return None
@@ -56,35 +58,38 @@ class BoundaryList:
 
         closed = True
         if direction == "E":
-            for bx in hl:
-                if bx > x and not closed:
+            for i in range(len(hl)):
+                if hl[i] > x and not closed:
                     break
                 closed = not closed
-            return (bx, y)
+            rx = hl[i]
         
         elif direction == "W":
-            for bx in reversed(hl):
-                if bx <= x and not closed:
+            for i in range(len(hl)-1,-1,-1):
+                if hl[i] <= x and not closed:
                     break
                 closed = not closed
-            return (bx-1, y)
+            rx = hl[i]-1
         
         elif direction == "S":
             for by in vl:
                 if by > y and not closed:
                     break
                 closed = not closed
-            return (x, by)
+            ry = by
         
         elif direction == "N":
             for by in reversed(vl):
                 if by <= y and not closed:
                     break
                 closed = not closed
-            return (x, by-1)
+            ry = by-1
             
         else:
             raise RuntimeError("This method is only for cardinal directions")
+        
+        print((rx,ry))
+        return (rx, ry)
 
 
     def get_next_open_boundary_pos(self, pos, direction):
